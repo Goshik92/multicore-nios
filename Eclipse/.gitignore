@@ -1,0 +1,20 @@
+### Eclipse ###
+
+# Exclude everything.
+# Eclipse project files will be completely excluded,
+# because they can be easily recreated.
+/**
+
+# Include directories
+# (without this we cannot whitelist files)
+!/**/
+
+# Include source files
+!/**/src/*.c
+
+# Exclude board-support projects
+# because they can be generated
+/**/*_bsp/
+
+# Include gitignore
+!.gitignore
