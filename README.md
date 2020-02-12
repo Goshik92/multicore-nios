@@ -4,7 +4,7 @@ I have made this toy project for the Terasic DE2-115 board to demonstrate how a 
 
 # System structure
 The system consist of 8 cores that communicate through mailboxes and shared memory. A simplified view of the system is shown on the picture below. Though it only shows two cores, it should be enough to recognize how the 8-core system is organized.
-![](C:\Users\Anon\Dropbox\projects\UAH\LaCASA\MulticoreNios\Images\diagram.png)
+![](Images/diagram.png)
 
 Each core has its own data memory (RAM) and program memory (ROM). Ideally, the program memory could be shared to implement the [SPMD](https://en.wikipedia.org/wiki/SPMD) technique. However, this would have caused additional complications in Platform Designer environment. So, in this example I used separate ROMs and separate executables for each core.
 
@@ -31,7 +31,7 @@ Platform designer is a GUI tool that comes together with Intel Quartus. The tool
 
 To open Platform Designer, first open Quartus Prime and then click Tools -> Platform Designer. Once it starts, click File -> Open... and choose the [nios_multicore.qsys](Qsys/nios_multicore.qsys) file from this repository. Now you observe and edit this system:
 
-![](C:\Users\Anon\Dropbox\projects\UAH\LaCASA\MulticoreNios\Images\qsys.png)
+![](Images/qsys.png)
 
 ## Subsystems
 Platform designer allows creating subsystems to make resources replication easier. In other words, you can put some components together, place them inside a module (subsystem), and then instantiate it as many times as you need. If, later, you need make any changes to the module, it is done in one place; all instances of that module will be updated automatically. Though this mechanism may be helpful for making multi-core systems, it is quite primitive, because it does not allow to parametrize subsystems.
@@ -40,7 +40,7 @@ In my multi-core Nios II system, I placed the processor, RAM, ROM, and two mailb
 
 If you want to observe how a core looks like inside, right click over any of the 8 cores and select Drill into subsystem:
 
-![](C:\Users\Anon\Dropbox\projects\UAH\LaCASA\MulticoreNios\Images\core.png)
+![](Images/core.png)
 
 To go back to the larger view, right click over any module and choose Move up.
 
@@ -48,12 +48,12 @@ To go back to the larger view, right click over any module and choose Move up.
 ## HDL synthesis
 To test the system you need to synthesize the hardware first. Open `Quartus/Synthesis.qpf` project in Quartus Prime. Ignore IP upgrade warning. Select Processing -> Start Compilation. Wait until the process finishes (may take a while, because the system is quite big). A successful synthesis result should look as follows:
 
-![](C:\Users\Anon\Dropbox\projects\UAH\LaCASA\MulticoreNios\Images\quartus_report.png)
+![](Images/quartus_report.png)
 
 ## Loading hardware configuration to FPGA
 Connect DE2-115 to your PC via USB. Choose Tools -> Programmer in Quartus Prime:
 
-![programmer](C:\Users\Anon\Dropbox\projects\UAH\LaCASA\MulticoreNios\Images\programmer.png)
+![programmer](Images/programmer.png)
 
 Click Start to load `Synthesis.sof` to the board.
 
@@ -62,32 +62,38 @@ Board support packages (BSP) contain code for working with hardware modules. For
 
 The script runs in the environment of the Nios II Command Shell, which comes with Quartus Prime and can be found using Windows 10 search panel:
 
-![](C:\Users\Anon\Dropbox\projects\UAH\LaCASA\MulticoreNios\Images\shell.png)
+![](Images/shell.png)
 
 After starting the shell, `cd` to your local copy of this repository to be able to run `script.sh`:
+
 ```cd "C:\<path-to-repo>\MulticoreNios"```
 
 The script may potentially run on operating systems other than Windows 10, but it has not been tested in other environment.
 
 ## Generating BSPs and projects
 Generate BSP for the required number of cores. In the current version you can choose any number of cores from 1 to 8. The following example uses 8 cores:
+
 ```./script.sh generate-bsp 8```
 
 Regardless of your choice, the hardware system contains 8 cores, so the numbers you specify will only determine how many cores will execute the program.
 
 ## Compiling projects
 To automatically build a separate executable for each core, run the following command:
+
 ```./script.sh make-projects 8```
+
 The number of cores (the second parameter) should match the number of cores used in the previous step.
 
 ## Running executables on Nios II cores
 To automatically load executable files to Nios cores, make sure you connected the DE2-115 board to your PC via USB-Blaster and run the following command:
+
 ```./script.sh load-elfs 8```
+
 Again, the number of cores should match the number of cores used in the previous steps. The script loads executables for the secondary cores first and then it loads the executable to the main core. After that, you should be able to see the output printed by the main core in the same window:
 
-![](C:\Users\Anon\Dropbox\projects\UAH\LaCASA\MulticoreNios\Images\run1.png)
+![](Images/run1.png)
 
-![](C:\Users\Anon\Dropbox\projects\UAH\LaCASA\MulticoreNios\Images\run2.png)
+![](Images/run2.png)
 
 The script prints the result of the multiplication of the identity matrix by a matrix with single-digit hexadecimal values as elements. It also prints the execution time, so that it can be used to estimate the efficiency of parallelization.
 
